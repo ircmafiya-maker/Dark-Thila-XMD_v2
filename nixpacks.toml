@@ -1,0 +1,21 @@
+# Railway Nixpacks build configuration for Dark Thila X MD
+# Installs Node 20, ffmpeg, enables pnpm via corepack, builds frontend + backend.
+
+[phases.setup]
+nixPkgs = ["nodejs_20", "ffmpeg"]
+
+[phases.install]
+cmds = [
+  "corepack enable",
+  "corepack prepare pnpm@10.26.1 --activate",
+  "pnpm install --frozen-lockfile"
+]
+
+[phases.build]
+cmds = [
+  "pnpm --filter @workspace/dark-thila-bot run build",
+  "pnpm --filter @workspace/api-server run build"
+]
+
+[start]
+cmd = "pnpm --filter @workspace/api-server run start"

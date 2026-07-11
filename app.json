@@ -1,0 +1,45 @@
+{
+  "name": "Dark Thila X MD",
+  "description": "Multi-user WhatsApp Bot with dark dashboard UI — built on Baileys + Express + React.",
+  "keywords": ["whatsapp", "bot", "baileys", "nodejs"],
+  "buildpacks": [
+    { "url": "heroku/nodejs" }
+  ],
+  "env": {
+    "NODE_ENV": {
+      "value": "production",
+      "description": "Must be 'production' so the API server serves the built frontend."
+    },
+    "JWT_SECRET": {
+      "required": true,
+      "description": "Secret key for signing dashboard login tokens. Use a long random string."
+    },
+    "SESSION_SECRET": {
+      "required": false,
+      "description": "Express session secret. Defaults to JWT_SECRET if unset."
+    },
+    "DATABASE_URL": {
+      "required": false,
+      "description": "PostgreSQL connection string for the user store (optional — bot works without it)."
+    },
+    "MONGODB_URI": {
+      "required": false,
+      "description": "MongoDB connection string for persistent Baileys auth state. STRONGLY recommended on Heroku/Railway — without it, WhatsApp sessions are lost on every redeploy."
+    },
+    "GEMINI_API_KEY": {
+      "required": false,
+      "description": "Google AI Studio API key for the AI chat feature (.ai command). Free tier available at https://aistudio.google.com"
+    },
+    "LOG_LEVEL": {
+      "value": "info",
+      "description": "Pino log level: trace | debug | info | warn | error"
+    }
+  },
+  "formation": {
+    "web": {
+      "quantity": 1,
+      "size": "eco"
+    }
+  },
+  "stack": "heroku-24"
+}

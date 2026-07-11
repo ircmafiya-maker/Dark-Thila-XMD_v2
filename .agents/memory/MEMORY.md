@@ -1,0 +1,3 @@
+---
+- [Baileys silent message drop](baileys-silent-drop.md) — fake newsletter contextInfo causes WhatsApp to silently drop messages; use sendImage() not inline URL sends
+- [Baileys group admin/LID matching](baileys-whatsapp-bot-flood-lid.md) — admin checks must compare phone digits (not raw JID) and fail open on metadata errors

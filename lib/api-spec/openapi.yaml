@@ -1,0 +1,222 @@
+openapi: 3.1.0
+info:
+  title: Api
+  version: 0.1.0
+  description: Dark Thila Bot API specification
+servers:
+  - url: /api
+    description: Base API path
+tags:
+  - name: health
+    description: Health operations
+  - name: sessions
+    description: WhatsApp bot session management
+paths:
+  /healthz:
+    get:
+      operationId: healthCheck
+      tags: [health]
+      summary: Health check
+      description: Returns server health status
+      responses:
+        "200":
+          description: Healthy
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HealthStatus"
+
+  /sessions:
+    get:
+      operationId: listSessions
+      tags: [sessions]
+      summary: List all active sessions
+      responses:
+        "200":
+          description: List of sessions
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/SessionStatus"
+
+  /connect:
+    post:
+      operationId: connectSession
+      tags: [sessions]
+      summary: Create a new WhatsApp bot session
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ConnectRequest"
+      responses:
+        "200":
+          description: Session created successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ConnectResponse"
+        "400":
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "409":
+          description: Session already exists
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /disconnect:
+    post:
+      operationId: disconnectSession
+      tags: [sessions]
+      summary: Disconnect a session
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/DisconnectRequest"
+      responses:
+        "200":
+          description: Session disconnected
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DisconnectResponse"
+        "404":
+          description: Session not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /status/{sessionId}:
+    get:
+      operationId: getSessionStatus
+      tags: [sessions]
+      summary: Get status of a specific session
+      parameters:
+        - name: sessionId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Session status
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SessionStatus"
+        "404":
+          description: Session not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+components:
+  schemas:
+    HealthStatus:
+      type: object
+      properties:
+        status:
+          type: string
+      required:
+        - status
+
+    SessionStatus:
+      type: object
+      properties:
+        sessionId:
+          type: string
+        phoneNumber:
+          type: string
+        status:
+          type: string
+          enum: [idle, qr, pairing, connected, reconnecting, disconnected]
+        qrCode:
+          type: string
+          nullable: true
+        pairingCode:
+          type: string
+          nullable: true
+        owner:
+          type: string
+          nullable: true
+        logo:
+          type: string
+          nullable: true
+        retryCount:
+          type: integer
+          nullable: true
+      required:
+        - sessionId
+        - phoneNumber
+        - status
+
+    ConnectRequest:
+      type: object
+      properties:
+        sessionId:
+          type: string
+        phoneNumber:
+          type: string
+        method:
+          type: string
+          enum: [qr, pairing]
+      required:
+        - sessionId
+        - phoneNumber
+        - method
+
+    ConnectResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+        message:
+          type: string
+        sessionId:
+          type: string
+      required:
+        - success
+        - message
+        - sessionId
+
+    DisconnectRequest:
+      type: object
+      properties:
+        sessionId:
+          type: string
+      required:
+        - sessionId
+
+    DisconnectResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+        message:
+          type: string
+      required:
+        - success
+        - message
+
+    ErrorResponse:
+      type: object
+      properties:
+        error:
+          type: string
+        message:
+          type: string
+      required:
+        - error
+        - message
